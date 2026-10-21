@@ -1,6 +1,6 @@
 # Experiment 02: portable tool restrictions
 
-**Status: prepared, not executed.** This experiment begins with **static conversion only**; do not run the restricted agent yet.
+**Status: Phase A completed on 2026-10-21.** See [recorded results](../results/02-tool-restrictions.md). Phase B remains untested.
 
 ## Question
 
@@ -30,7 +30,7 @@ This probes OpenCode's documented mapping format, Copilot's treatment of that sa
 
 ## Phase A: static conversion (no AI credits)
 
-From a clean checkout of **`main`** after merging this experiment scaffold, in the repository root:
+For the initial run, use **`experiment/02-tool-restrictions`** until PR #6 is merged; afterward use `main`. In the repository root:
 
 ```bash
 git rev-parse --short HEAD
@@ -64,12 +64,15 @@ Do not stage generated outputs until reviewing `apm.lock.yaml` and checking for 
 After the APM install, run the lightweight validator from the repository root. It checks the observed generated **restricted reviewer** against selected documented contracts, not every possible vendor field:
 
 ```bash
-python3 -m pip install pyyaml  # preferably in a virtual environment
+sudo apt install python3.14-venv  # Ubuntu 26.04, if ensurepip is missing
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install pyyaml
 opencode --version
-python3 scripts/validate-experiment-02.py --opencode v1
+python scripts/validate-experiment-02.py --opencode v2
 ```
 
-If your installed OpenCode is **v2**, replace `--opencode v1` with `--opencode v2`. OpenCode [v1 agent permissions](https://opencode.ai/docs/agents/#permissions) use a `permission` mapping, while [v2 agent docs](https://opencode.ai/v2/docs/agents) show a `permissions` list of rules. Use the matching version rather than conflating schemas.
+If your installed OpenCode is **v1**, replace `--opencode v2` with `--opencode v1`. OpenCode [v1 agent permissions](https://opencode.ai/docs/agents/#permissions) use a `permission` mapping, while [v2 agent docs](https://opencode.ai/v2/docs/agents) show a `permissions` list of rules. Use the matching version rather than conflating schemas.
 
 **Expected for our deliberately incompatible fixture:** the validator exits nonzero, reporting (1) Copilot requires a list/string rather than a mapping, (2) no explicit OpenCode native permission-denial rules, and (3) the Codex restriction loss. The APM warning and validator findings are separate evidence. The script is a focused experiment diagnostic, **not** a comprehensive vendor schema validator or security enforcement test.
 
@@ -81,4 +84,4 @@ Do **not** interpret an unchanged file as proof that a permission boundary was e
 
 ## Record results
 
-Fill in [Experiment 02 results](../results/02-tool-restrictions.md) with **actual** commands, warnings and inspected output. Leave unexecuted steps as **Not tested**. Follow up with a separate results PR.
+The actual initial output is recorded in [Experiment 02 results](../results/02-tool-restrictions.md). For reruns record the installed versions, exact commands, warnings and outputs. Leave unexecuted steps as **Not tested**.

@@ -59,6 +59,20 @@ The outcome to record for each target is:
 
 Do not stage generated outputs until reviewing `apm.lock.yaml` and checking for sensitive content. Do not use `--force` to hide conflicts.
 
+## Focused schema validation
+
+After the APM install, run the lightweight validator from the repository root. It checks the observed generated **restricted reviewer** against selected documented contracts, not every possible vendor field:
+
+```bash
+python3 -m pip install pyyaml  # preferably in a virtual environment
+opencode --version
+python3 scripts/validate-experiment-02.py --opencode v1
+```
+
+If your installed OpenCode is **v2**, replace `--opencode v1` with `--opencode v2`. OpenCode [v1 agent permissions](https://opencode.ai/docs/agents/#permissions) use a `permission` mapping, while [v2 agent docs](https://opencode.ai/v2/docs/agents) show a `permissions` list of rules. Use the matching version rather than conflating schemas.
+
+**Expected for our deliberately incompatible fixture:** the validator exits nonzero, reporting (1) Copilot requires a list/string rather than a mapping, (2) no explicit OpenCode native permission-denial rules, and (3) the Codex restriction loss. The APM warning and validator findings are separate evidence. The script is a focused experiment diagnostic, **not** a comprehensive vendor schema validator or security enforcement test.
+
 ## Phase B: later, separate controlled enforcement test
 
 Only after studying the Phase A result, design a minimal runtime test involving a **disposable, untracked, isolated fixture**. Set independent host-level restrictions where needed. Determine whether a request to modify the fixture is blocked **by tool availability or sandbox policy**, allowed, or merely declined because of instructions. Test one harness at a time with explicit opt-in to any AI-credit usage.

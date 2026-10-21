@@ -1,6 +1,6 @@
 # Experiment 01 results
 
-**Status:** Partially completed — deployment and generated agent content verified for three targets; Copilot runtime passed; OpenCode runtime review passed with a marker mismatch; Codex subagent trace and correct review observed; independent fixture diff pending.
+**Status:** Partially completed — deployment and generated agent content verified for three targets; Copilot runtime passed; OpenCode runtime review passed with a marker mismatch; Codex subagent trace and correct review observed; independent fixture diff passed.
 
 ## Environment
 
@@ -136,7 +136,7 @@ The user launched interactive Codex in the repository and requested delegation t
 
 **Review outcome:** identified `src/ScoreCalculator.cs:10` as an off-by-one boundary bug, gave `ScoreAt(new[] { 7 }, 1)` as a failing input, recommended `index >= scores.Length`, proposed a unit test and ended with the exact marker `APM-REVIEW-COMPLETE`. Elapsed time reported: **24 seconds**.
 
-**Pending:** run `git diff -- src/ScoreCalculator.cs` after Codex and report the result. No Codex cost or credit data was supplied. This is a successful reviewer-style delegated response with the above trace caveat.
+**Verified:** the user ran `git diff -- src/ScoreCalculator.cs` after Codex and its output was empty. No Codex cost or credit data was supplied. This is a successful reviewer-style delegated response with the above trace caveat.
 
 ## Per-harness findings
 
@@ -149,7 +149,7 @@ The user launched interactive Codex in the repository and requested delegation t
 | Explicitly invoked | Pass | Pass (subagent spawned/completed in trace) | Pass (CLI output identified `reviewer`) |
 | Off-by-one bug identified | Pass | Pass | Pass (reproduced using xUnit in scratch directory) |
 | Marker present in response | Pass | Pass | Fail (output ends `APM-REVIEW-COMPLET`, missing final `E`) |
-| Fixture unchanged after agent execution | Pass (`git diff -- src/ScoreCalculator.cs` empty) | Not independently checked (prompt said no edits) | Pass (agent checked original file and Git diff; scratch files changed only) |
+| Fixture unchanged after agent execution | Pass (`git diff -- src/ScoreCalculator.cs` empty) | Pass (`git diff -- src/ScoreCalculator.cs` empty) | Pass (agent checked original file and Git diff; scratch files changed only) |
 | Propagation works after source edit | Not tested | Not tested | Not tested |
 
 ## Findings so far

@@ -55,13 +55,12 @@ ls -l .github/agents/reviewer.agent.md .codex/agents/reviewer.toml .opencode/age
 cat .github/agents/reviewer.agent.md
 cat .codex/agents/reviewer.toml
 cat .opencode/agents/reviewer.md
-git status --short
 git status --short  # generated files may be untracked; git diff won't display untracked content
 ```
 
 Observed in the initial APM 0.34.0 run:
 
-| Target | Expected file | Expected transformation |
+| Target | Generated file | Observed transformation |
 | --- | --- | --- |
 | Copilot | `.github/agents/reviewer.agent.md` | Markdown copied |
 | Codex | `.codex/agents/reviewer.toml` | Markdown converted to TOML (body as `developer_instructions`) |

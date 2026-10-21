@@ -10,15 +10,36 @@ This experiment covers basic names, descriptions and instructions. Tool restrict
 
 ## Prerequisites
 
-- Clone the repository and check out this experiment branch (or merge it first).
-- Install [Microsoft APM](https://microsoft.github.io/apm/) using its [installation guide](https://microsoft.github.io/apm/installation/).
+- Clone the repository and check out this experiment branch (or merge it first). The commands below show both steps.
+- Install [Microsoft APM](https://microsoft.github.io/apm/) and your harness CLIs following [the lab installation guide](../install.md).
 - Have the GitHub Copilot CLI and/or OpenCode available. Codex is optional: static-file verification is still useful.
 - For the C# fixture, .NET 8 SDK is optional; no compilation is needed to identify the intentional bug.
 - Run everything **locally inside this repository**, not with APM's `--global` option.
 
 ## Run
 
-From the repository root:
+Clone the repository (or use an existing checkout), then switch to the experiment branch if it has not been merged:
+
+```bash
+git clone https://github.com/lfarci/agent-portability-lab.git
+cd agent-portability-lab
+git fetch origin experiment/01-basic-agent-portability
+git switch experiment/01-basic-agent-portability
+```
+
+If the experiment has been merged, simply use `main` instead. Record which commit you tested.
+
+Verify the installed tools and record their versions (missing optional CLIs are **Not tested**, not failures):
+
+```bash
+git rev-parse HEAD
+apm --version
+copilot --version
+opencode --version
+codex --version  # optional
+```
+
+From the repository root run:
 
 ```bash
 apm --version

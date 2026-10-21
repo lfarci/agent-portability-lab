@@ -1,6 +1,6 @@
 # Experiment 01 results
 
-**Status:** Partially completed — deployment and generated agent content verified for three targets; runtime tests pending.
+**Status:** Partially completed — deployment and generated agent content verified for three targets; Copilot runtime passed; OpenCode and Codex runtime tests pending.
 
 ## Environment
 
@@ -94,6 +94,20 @@ developer_instructions = "# Reviewer\\n\\nYou are a focused C# reviewer. Inspect
 
 Copilot and OpenCode both use the identical Markdown source, beginning with `name: reviewer` and `description: Reviews C# code for correctness and edge cases without editing files.` followed by the complete reviewer prompt.
 
+## Copilot runtime — first successful invocation
+
+The user ran the generated reviewer agent explicitly:
+
+```bash
+copilot --agent=reviewer --prompt "Review src/ScoreCalculator.cs for correctness bugs and edge cases. Do not modify files. Identify a failing input and recommend a unit test."
+```
+
+**Observed:** Copilot read the C# fixture and related project files, reported the boundary bug at `ScoreCalculator.cs:10-12`, identified `ScoreAt(new[] { 10, 20 }, 2)` and `ScoreAt(Array.Empty<int>(), 0)` as failing inputs, recommended replacing `>` with `>=`, and supplied a unit test. Its final line was `APM-REVIEW-COMPLETE`.
+
+The CLI reported **Changes +0 -0**, **25 seconds**, **0.75 AI credits** and about **1.3k output tokens**. These are observations from one run, not comparative benchmarks. Independent verification with `git diff -- src/ScoreCalculator.cs` is still pending.
+
+This is evidence of a successful Copilot agent invocation with the APM-generated configuration, but does not establish tool-permission enforcement or cross-harness behavioral equivalence.
+
 ## Per-harness findings
 
 | Check | Copilot | Codex | OpenCode |
@@ -101,11 +115,11 @@ Copilot and OpenCode both use the identical Markdown source, beginning with `nam
 | APM reported agent deployment to target directory | Pass | Pass | Pass |
 | Target directory appeared in Git status | Pass | Pass | Pass |
 | Expected file present and content verified | Pass | Pass | Pass |
-| Agent discovered by harness | Not tested | Not tested | Not tested |
-| Explicitly invoked | Not tested | Not tested | Not tested |
-| Off-by-one bug identified | Not tested | Not tested | Not tested |
-| Marker present in response | Not tested | Not tested | Not tested |
-| Fixture unchanged after agent execution | Not tested | Not tested | Not tested |
+| Agent discovered by harness | Pass (selected with `--agent=reviewer`) | Not tested | Not tested |
+| Explicitly invoked | Pass | Not tested | Not tested |
+| Off-by-one bug identified | Pass | Not tested | Not tested |
+| Marker present in response | Pass | Not tested | Not tested |
+| Fixture unchanged after agent execution | CLI reports `+0 -0`; independent Git diff pending | Not tested | Not tested |
 | Propagation works after source edit | Not tested | Not tested | Not tested |
 
 ## Findings so far
@@ -118,9 +132,9 @@ Copilot and OpenCode both use the identical Markdown source, beginning with `nam
 
 ## Next steps
 
-1. Explicitly invoke the reviewer in the available harnesses against the same C# fixture.
-2. Check that the agent is recognized and that its response identifies the off-by-one bug.
-3. Test whether editing only the canonical agent propagates to all targets.
-4. Record harness versions, actual output, warnings and generated-file diffs in a follow-up PR.
+1. Run `git diff -- src/ScoreCalculator.cs` to independently verify the Copilot run did not change the fixture.\n2. Invoke the generated reviewer in OpenCode and (if available) Codex against the same C# fixture.
+3. Record agent discovery, invocation, and bug detection for the remaining harnesses.
+4. Test whether editing only the canonical agent propagates to all targets.
+5. Record harness versions, actual output, warnings and generated-file diffs in a follow-up PR.
 
 **Evidence:** user-provided console dry-run output and screenshot of a verbose successful APM 0.34.0 run. The generated files and lockfile remain local and are not included in this PR.

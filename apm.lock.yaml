@@ -3,6 +3,15 @@ dependencies: []
 deployments:
 - kind: project-relative
   target: codex
+  value: .codex/agents/restricted-reviewer.toml
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:839e7195624e76416d9296bc5ba7d696018050c4f54149056b573c40835dc022
+- kind: project-relative
+  target: codex
   value: .codex/agents/reviewer.toml
   runtime: null
   scope: project
@@ -10,6 +19,15 @@ deployments:
   - .
   active_owner: .
   content_hash: sha256:85384466de8db857bd613b01c95ec528ddb11d9464a70777e4f4e7bfe8117add
+- kind: project-relative
+  target: copilot
+  value: .github/agents/restricted-reviewer.agent.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2d5b1d1eedfc6948bc325d526671371db2c9d84a07e3d05ec972f7446c259aec
 - kind: project-relative
   target: copilot
   value: .github/agents/reviewer.agent.md
@@ -21,6 +39,15 @@ deployments:
   content_hash: sha256:3920e54703f8f4db4c25f8b844a62ba432329657bda60b7d19b18133f0c2ccee
 - kind: project-relative
   target: opencode
+  value: .opencode/agents/restricted-reviewer.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2d5b1d1eedfc6948bc325d526671371db2c9d84a07e3d05ec972f7446c259aec
+- kind: project-relative
+  target: opencode
   value: .opencode/agents/reviewer.md
   runtime: null
   scope: project
@@ -29,10 +56,16 @@ deployments:
   active_owner: .
   content_hash: sha256:3920e54703f8f4db4c25f8b844a62ba432329657bda60b7d19b18133f0c2ccee
 local_deployed_files:
+- .codex/agents/restricted-reviewer.toml
 - .codex/agents/reviewer.toml
+- .github/agents/restricted-reviewer.agent.md
 - .github/agents/reviewer.agent.md
+- .opencode/agents/restricted-reviewer.md
 - .opencode/agents/reviewer.md
 local_deployed_file_hashes:
+  .codex/agents/restricted-reviewer.toml: sha256:839e7195624e76416d9296bc5ba7d696018050c4f54149056b573c40835dc022
   .codex/agents/reviewer.toml: sha256:85384466de8db857bd613b01c95ec528ddb11d9464a70777e4f4e7bfe8117add
+  .github/agents/restricted-reviewer.agent.md: sha256:2d5b1d1eedfc6948bc325d526671371db2c9d84a07e3d05ec972f7446c259aec
   .github/agents/reviewer.agent.md: sha256:3920e54703f8f4db4c25f8b844a62ba432329657bda60b7d19b18133f0c2ccee
+  .opencode/agents/restricted-reviewer.md: sha256:2d5b1d1eedfc6948bc325d526671371db2c9d84a07e3d05ec972f7446c259aec
   .opencode/agents/reviewer.md: sha256:3920e54703f8f4db4c25f8b844a62ba432329657bda60b7d19b18133f0c2ccee

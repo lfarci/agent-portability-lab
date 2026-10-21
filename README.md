@@ -5,3 +5,9 @@ A reproducible research repository for evaluating Microsoft Agent Package Manage
 Research notes and experiment plans live in `docs/` once proposed changes are merged.
 
 Status: planning; no APM compatibility experiments have been executed yet.
+
+Generated agent files are committed intentionally. Do not edit them manually; refresh them with:
+
+```sh
+apm install --target copilot,codex,opencode
+```

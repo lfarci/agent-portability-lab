@@ -1,0 +1,8 @@
+# APM's dependency cache
+apm_modules/
+
+# .NET local build artifacts
+**/bin/
+**/obj/
+
+# Keep generated harness agent files visible in Git for experiment review.

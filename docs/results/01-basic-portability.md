@@ -104,7 +104,7 @@ copilot --agent=reviewer --prompt "Review src/ScoreCalculator.cs for correctness
 
 **Observed:** Copilot read the C# fixture and related project files, reported the boundary bug at `ScoreCalculator.cs:10-12`, identified `ScoreAt(new[] { 10, 20 }, 2)` and `ScoreAt(Array.Empty<int>(), 0)` as failing inputs, recommended replacing `>` with `>=`, and supplied a unit test. Its final line was `APM-REVIEW-COMPLETE`.
 
-The CLI reported **Changes +0 -0**, **25 seconds**, **0.75 AI credits** and about **1.3k output tokens**. These are observations from one run, not comparative benchmarks. Independent verification with `git diff -- src/ScoreCalculator.cs` is still pending.
+The CLI reported **Changes +0 -0**, **25 seconds**, **0.75 AI credits** and about **1.3k output tokens**. These are observations from one run, not comparative benchmarks. The user subsequently ran `git diff -- src/ScoreCalculator.cs` and confirmed empty output, independently verifying no tracked fixture changes.
 
 This is evidence of a successful Copilot agent invocation with the APM-generated configuration, but does not establish tool-permission enforcement or cross-harness behavioral equivalence.
 
@@ -119,7 +119,7 @@ This is evidence of a successful Copilot agent invocation with the APM-generated
 | Explicitly invoked | Pass | Not tested | Not tested |
 | Off-by-one bug identified | Pass | Not tested | Not tested |
 | Marker present in response | Pass | Not tested | Not tested |
-| Fixture unchanged after agent execution | CLI reports `+0 -0`; independent Git diff pending | Not tested | Not tested |
+| Fixture unchanged after agent execution | Pass (`git diff -- src/ScoreCalculator.cs` empty) | Not tested | Not tested |
 | Propagation works after source edit | Not tested | Not tested | Not tested |
 
 ## Findings so far
@@ -133,8 +133,8 @@ This is evidence of a successful Copilot agent invocation with the APM-generated
 ## Next steps
 
 1. Run `git diff -- src/ScoreCalculator.cs` to independently verify the Copilot run did not change the fixture.\n2. Invoke the generated reviewer in OpenCode and (if available) Codex against the same C# fixture.
-3. Record agent discovery, invocation, and bug detection for the remaining harnesses.
-4. Test whether editing only the canonical agent propagates to all targets.
-5. Record harness versions, actual output, warnings and generated-file diffs in a follow-up PR.
+2. Record agent discovery, invocation, and bug detection for the remaining harnesses.
+3. Test whether editing only the canonical agent propagates to all targets.
+4. Record harness versions, actual output, warnings and generated-file diffs in a follow-up PR.
 
 **Evidence:** user-provided console dry-run output and screenshot of a verbose successful APM 0.34.0 run. The generated files and lockfile remain local and are not included in this PR.

@@ -1,6 +1,6 @@
 # Experiment 01 results
 
-**Status:** Partially completed — deployment and generated agent content verified for three targets; Copilot runtime passed; OpenCode and Codex runtime tests pending.
+**Status:** Partially completed — deployment and generated agent content verified for three targets; Copilot runtime passed; OpenCode runtime review passed with a marker mismatch; Codex runtime test pending.
 
 ## Environment
 
@@ -108,6 +108,24 @@ The CLI reported **Changes +0 -0**, **25 seconds**, **0.75 AI credits** and abou
 
 This is evidence of a successful Copilot agent invocation with the APM-generated configuration, but does not establish tool-permission enforcement or cross-harness behavioral equivalence.
 
+## OpenCode runtime — review succeeded, marker mismatch
+
+Command:
+
+```bash
+opencode run --agent reviewer "Review src/ScoreCalculator.cs for correctness bugs and edge cases. Do not modify files. Identify a failing input and recommend a unit test."
+```
+
+**Observed model:** `minimax-m3.1-flash-free` (as reported by OpenCode). OpenCode identified its active agent as `reviewer` and loaded `.opencode/agents/reviewer.md`.
+
+- Correctly diagnosed the deliberate `index == scores.Length` off-by-one error, including an empty-array example and the `>=` fix.
+- Went beyond a textual review: created a scratch reproduction in `/tmp/opencode/`, ran xUnit tests against the original fixture (**2 failed, 6 passed**), and retested a fixed scratch copy (**8 passed**). The first scratch test build needed an adjustment; subsequent tests ran successfully.
+- Flagged additional possible API-contract concerns: `-1` sentinel ambiguity and null-array behavior. These are secondary to the seeded bug and depend on intended domain contracts.
+- Independently checked Git status and `git diff --stat -- src/`; the repository fixture retained the original `index > scores.Length` guard. Pre-existing untracked APM outputs remained.
+- **Exact marker failure:** the captured final line was `APM-REVIEW-COMPLET`, one character short of the required `APM-REVIEW-COMPLETE`. Treat the strict output-assertion check as failed, despite a successful review. Confirm whether this is a copied-output truncation or reproducible model behavior on a repeat run; do not normalize the discrepancy away.
+
+This result is a **functional runtime pass with an exact-marker failure**, not a fully clean test. The agent did more work than Copilot and used scratch-file writes; only the project-file no-modification requirement is confirmed, not a general permission boundary. No timing or cost figure was supplied for the OpenCode run.
+
 ## Per-harness findings
 
 | Check | Copilot | Codex | OpenCode |
@@ -115,11 +133,11 @@ This is evidence of a successful Copilot agent invocation with the APM-generated
 | APM reported agent deployment to target directory | Pass | Pass | Pass |
 | Target directory appeared in Git status | Pass | Pass | Pass |
 | Expected file present and content verified | Pass | Pass | Pass |
-| Agent discovered by harness | Pass (selected with `--agent=reviewer`) | Not tested | Not tested |
-| Explicitly invoked | Pass | Not tested | Not tested |
-| Off-by-one bug identified | Pass | Not tested | Not tested |
-| Marker present in response | Pass | Not tested | Not tested |
-| Fixture unchanged after agent execution | Pass (`git diff -- src/ScoreCalculator.cs` empty) | Not tested | Not tested |
+| Agent discovered by harness | Pass (selected with `--agent=reviewer`) | Not tested | Pass (`opencode run --agent reviewer`) |
+| Explicitly invoked | Pass | Not tested | Pass (CLI output identified `reviewer`) |
+| Off-by-one bug identified | Pass | Not tested | Pass (reproduced using xUnit in scratch directory) |
+| Marker present in response | Pass | Not tested | Fail (output ends `APM-REVIEW-COMPLET`, missing final `E`) |
+| Fixture unchanged after agent execution | Pass (`git diff -- src/ScoreCalculator.cs` empty) | Not tested | Pass (agent checked original file and Git diff; scratch files changed only) |
 | Propagation works after source edit | Not tested | Not tested | Not tested |
 
 ## Findings so far
@@ -133,7 +151,7 @@ This is evidence of a successful Copilot agent invocation with the APM-generated
 ## Next steps
 
 1. Run `git diff -- src/ScoreCalculator.cs` to independently verify the Copilot run did not change the fixture.\n2. Invoke the generated reviewer in OpenCode and (if available) Codex against the same C# fixture.
-2. Record agent discovery, invocation, and bug detection for the remaining harnesses.
+2. Optionally repeat OpenCode once to determine whether the one-character response-marker mismatch recurs.
 3. Test whether editing only the canonical agent propagates to all targets.
 4. Record harness versions, actual output, warnings and generated-file diffs in a follow-up PR.
 

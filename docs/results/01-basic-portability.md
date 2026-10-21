@@ -1,16 +1,16 @@
 # Experiment 01 results
 
-**Status:** Core experiment completed (2026-10-21). All three generated agents preserved the source instructions, ran the review task, and propagated a canonical-source update. Caveats: OpenCode's exact marker was one character short; Codex subagent appeared as `custom_reviewer` in the trace.
+**Status:** Basic experiment completed locally on `main` (2026-10-21). All three generated agents preserved the source instructions, ran the review task, and propagated a canonical-source update. Caveats: OpenCode's exact marker was one character short; Codex subagent appeared as `custom_reviewer` in the trace.
 
 ## Environment
 
 - Date: 2026-10-21
-- OS / shell: terminal screenshot provided; precise OS and shell not confirmed
+- OS / shell: Linux filesystem and terminal confirmed by OpenCode output; exact distribution and shell not recorded
 - APM version (`apm --version`): **0.34.0 (65b3b9f)**
-- Git branch: `main`, tracking `origin/main` (commit SHA not recorded)
+- Git branch: `main`, tracking `origin/main`; `git log` during the OpenCode run showed HEAD `0c559e7` (the merged Experiment 01 scaffold)
 - Copilot CLI version: Not recorded
 - OpenCode version: Not recorded
-- Codex version: Not recorded
+- Codex version: **0.163.0** (interactive CLI screenshot)
 
 ## APM installation observations
 
@@ -82,7 +82,7 @@ The user provided the generated definitions from the same APM 0.34.0 run.
 | Codex | `.codex/agents/reviewer.toml` | `name`, `description`, and `developer_instructions` preserve the canonical agent contents in TOML |
 | OpenCode | `.opencode/agents/reviewer.md` | Markdown frontmatter and full instructions match the canonical agent |
 
-The same `APM-REVIEW-COMPLETE` marker appears in all three definitions. For this deliberately simple agent, APM preserved the name, description and instructions across all targets. This **does not** verify that any harness discovers, invokes or obeys the agent, nor does it test advanced metadata, permissions or delegation.
+The same `APM-REVIEW-COMPLETE` marker appears in all three definitions. For this deliberately simple agent, APM preserved the name, description and instructions across all targets. This static inspection alone did not establish discovery or execution; the subsequent runtime checks below provide separate evidence for those aspects. Advanced metadata and permissions remain untested.
 
 ### Codex TOML excerpt
 

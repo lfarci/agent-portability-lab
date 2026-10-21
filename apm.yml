@@ -1,0 +1,7 @@
+name: agent-portability-lab
+version: 0.1.0
+description: Minimal multi-harness custom-agent portability experiment
+targets:
+  - copilot
+  - codex
+  - opencode

@@ -1,6 +1,6 @@
 # Experiment 01 results
 
-**Status:** Partially completed — APM deployment observed; generated contents and harness runtime behavior not yet inspected.
+**Status:** Partially completed — deployment and generated agent content verified for three targets; runtime tests pending.
 
 ## Environment
 
@@ -69,7 +69,30 @@ Immediately afterward, local Git status showed these **untracked** entries:
 ?? apm.lock.yaml
 ```
 
-The screenshot confirms the directories and lockfile were created, but the individual files' names and contents have **not yet been read or validated**.
+The screenshot confirms the directories and lockfile were created. The user subsequently inspected and shared the three generated agent definitions.
+
+
+## Generated agent content verification
+
+The user provided the generated definitions from the same APM 0.34.0 run.
+
+| Target | Inspected output | Finding |
+| --- | --- | --- |
+| GitHub Copilot | `.github/agents/reviewer.agent.md` | Markdown frontmatter and full instructions match the canonical agent |
+| Codex | `.codex/agents/reviewer.toml` | `name`, `description`, and `developer_instructions` preserve the canonical agent contents in TOML |
+| OpenCode | `.opencode/agents/reviewer.md` | Markdown frontmatter and full instructions match the canonical agent |
+
+The same `APM-REVIEW-COMPLETE` marker appears in all three definitions. For this deliberately simple agent, APM preserved the name, description and instructions across all targets. This **does not** verify that any harness discovers, invokes or obeys the agent, nor does it test advanced metadata, permissions or delegation.
+
+### Codex TOML excerpt
+
+```toml
+name = "reviewer"
+description = "Reviews C# code for correctness and edge cases without editing files."
+developer_instructions = "# Reviewer\\n\\nYou are a focused C# reviewer. Inspect the requested source file for concrete correctness bugs and edge cases.\\n\\n- Do not edit files or execute destructive commands.\\n- Prioritize correctness over formatting or naming suggestions.\\n- Explain each bug with a specific file location, reproduction input, and proposed fix.\\n- Suggest at least one small test for each reported bug.\\n- Finish your response with the exact text: APM-REVIEW-COMPLETE"
+```
+
+Copilot and OpenCode both use the identical Markdown source, beginning with `name: reviewer` and `description: Reviews C# code for correctness and edge cases without editing files.` followed by the complete reviewer prompt.
 
 ## Per-harness findings
 
@@ -77,7 +100,7 @@ The screenshot confirms the directories and lockfile were created, but the indiv
 | --- | --- | --- | --- |
 | APM reported agent deployment to target directory | Pass | Pass | Pass |
 | Target directory appeared in Git status | Pass | Pass | Pass |
-| Expected file present and content verified | Not tested | Not tested | Not tested |
+| Expected file present and content verified | Pass | Pass | Pass |
 | Agent discovered by harness | Not tested | Not tested | Not tested |
 | Explicitly invoked | Not tested | Not tested | Not tested |
 | Off-by-one bug identified | Not tested | Not tested | Not tested |
@@ -90,14 +113,14 @@ The screenshot confirms the directories and lockfile were created, but the indiv
 1. **Local source deployment works at least at the directory-integration level** with APM 0.34.0; `apm.yml` does not need third-party packages to trigger local `.apm/` integration.
 2. **Dry-run preview differed from actual installation.** It reported no changes even though the actual install deployed three local agent primitives.
 3. The missing `lfarci/.github-private` policy warning did not block this run. The actual install said no organization policy was found.
-4. **No portability conclusion yet:** success at deployment does not establish that the converted Codex TOML is correct, OpenCode accepts its frontmatter, or any harness actually uses the agent.
+4. **Basic content portability confirmed:** all three generated definitions preserved the reviewer identity, description, and instruction body. Advanced agent metadata and behavior remain untested.\n5. **No runtime conclusion yet:** success at deployment does not establish that the converted Codex TOML is correct, OpenCode accepts its frontmatter, or any harness actually uses the agent.
 
 ## Next steps
 
 1. Inspect `.github/agents/reviewer.agent.md`, `.codex/agents/reviewer.toml`, and `.opencode/agents/reviewer.md`.
 2. Verify the names, descriptions, reviewer instructions and `APM-REVIEW-COMPLETE` marker.
 3. Explicitly invoke the reviewer in available harnesses, using the same C# fixture.
-4. Test whether editing only the canonical agent propagates correctly.
-5. Record actual versions, outputs, unexpected warnings, and generated-file diffs in a follow-up PR.
+2. Test whether editing only the canonical agent propagates correctly.
+3. Record actual versions, outputs, unexpected warnings, and generated-file diffs in a follow-up PR.
 
 **Evidence:** user-provided console dry-run output and screenshot of a verbose successful APM 0.34.0 run. The generated files and lockfile remain local and are not included in this PR.

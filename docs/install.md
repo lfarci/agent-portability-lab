@@ -87,40 +87,6 @@ Start `codex` once to configure authentication. If Codex is unavailable, **still
 
 Official reference: [Codex CLI repository](https://github.com/openai/codex).
 
-## 5. Run Experiment 01
+## Next step
 
-Clone the lab (or use your existing checkout):
-
-```bash
-git clone https://github.com/lfarci/agent-portability-lab.git
-cd agent-portability-lab
-```
-
-If Experiment 01 is not yet merged, check out `experiment/01-basic-agent-portability` after fetching it.
-
-Record versions before running APM:
-
-```bash
-apm --version
-copilot --version
-opencode --version
-codex --version  # optional
-```
-
-Missing optional tools should be recorded as *Not tested*. Run APM **locally** in the lab directory, not with `--global`:
-
-```bash
-apm install --dry-run --target copilot,codex,opencode
-apm install --target copilot,codex,opencode
-```
-
-Check `apm install --help` if your installed APM release differs.
-
-Then follow [Experiment 01](experiments/01-basic-portability.md) to inspect generated files, invoke the reviewer and complete the [results template](results/01-basic-portability.md).
-
-## Notes
-
-- The CLIs may consume **AI credits or API usage**. Don't run repeated tests automatically before assessing cost.
-- APM file generation and actual agent invocation are **separate checks**.
-- Keep these trials inside this throwaway repo, not personal dotfiles or production code.
-- No APM or harness execution was performed while creating these instructions.
+Once the required tools are installed, follow [Experiment 01](experiments/01-basic-portability.md) for checkout, version recording, APM commands, agent invocation and results. This guide is only for installing and configuring prerequisites.

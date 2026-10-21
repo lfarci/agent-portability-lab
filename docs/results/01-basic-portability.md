@@ -113,14 +113,14 @@ Copilot and OpenCode both use the identical Markdown source, beginning with `nam
 1. **Local source deployment works at least at the directory-integration level** with APM 0.34.0; `apm.yml` does not need third-party packages to trigger local `.apm/` integration.
 2. **Dry-run preview differed from actual installation.** It reported no changes even though the actual install deployed three local agent primitives.
 3. The missing `lfarci/.github-private` policy warning did not block this run. The actual install said no organization policy was found.
-4. **Basic content portability confirmed:** all three generated definitions preserved the reviewer identity, description, and instruction body. Advanced agent metadata and behavior remain untested.\n5. **No runtime conclusion yet:** success at deployment does not establish that the converted Codex TOML is correct, OpenCode accepts its frontmatter, or any harness actually uses the agent.
+4. **Basic content portability confirmed:** all three generated definitions preserved the reviewer identity, description, and instruction body. Advanced agent metadata and behavior remain untested.
+5. **No runtime conclusion yet:** the inspected Codex TOML preserves the simple agent content, but no harness has yet been shown to discover, invoke or obey the agent.
 
 ## Next steps
 
-1. Inspect `.github/agents/reviewer.agent.md`, `.codex/agents/reviewer.toml`, and `.opencode/agents/reviewer.md`.
-2. Verify the names, descriptions, reviewer instructions and `APM-REVIEW-COMPLETE` marker.
-3. Explicitly invoke the reviewer in available harnesses, using the same C# fixture.
-2. Test whether editing only the canonical agent propagates correctly.
-3. Record actual versions, outputs, unexpected warnings, and generated-file diffs in a follow-up PR.
+1. Explicitly invoke the reviewer in the available harnesses against the same C# fixture.
+2. Check that the agent is recognized and that its response identifies the off-by-one bug.
+3. Test whether editing only the canonical agent propagates to all targets.
+4. Record harness versions, actual output, warnings and generated-file diffs in a follow-up PR.
 
 **Evidence:** user-provided console dry-run output and screenshot of a verbose successful APM 0.34.0 run. The generated files and lockfile remain local and are not included in this PR.

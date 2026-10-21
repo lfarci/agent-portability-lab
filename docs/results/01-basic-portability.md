@@ -1,6 +1,6 @@
 # Experiment 01 results
 
-**Status:** Partially completed — deployment and generated agent content verified for three targets; Copilot runtime passed; OpenCode runtime review passed with a marker mismatch; Codex subagent trace and correct review observed; independent fixture diff passed.
+**Status:** Core experiment completed (2026-10-21). All three generated agents preserved the source instructions, ran the review task, and propagated a canonical-source update. Caveats: OpenCode's exact marker was one character short; Codex subagent appeared as `custom_reviewer` in the trace.
 
 ## Environment
 
@@ -150,21 +150,34 @@ The user launched interactive Codex in the repository and requested delegation t
 | Off-by-one bug identified | Pass | Pass | Pass (reproduced using xUnit in scratch directory) |
 | Marker present in response | Pass | Pass | Fail (output ends `APM-REVIEW-COMPLET`, missing final `E`) |
 | Fixture unchanged after agent execution | Pass (`git diff -- src/ScoreCalculator.cs` empty) | Pass (`git diff -- src/ScoreCalculator.cs` empty) | Pass (agent checked original file and Git diff; scratch files changed only) |
-| Propagation works after source edit | Not tested | Not tested | Not tested |
+| Propagation works after source edit | Pass (grep verified) | Pass (grep verified in TOML) | Pass (grep verified) |
 
-## Findings so far
+## Propagation check — passed for all three targets
 
-1. **Local source deployment works at least at the directory-integration level** with APM 0.34.0; `apm.yml` does not need third-party packages to trigger local `.apm/` integration.
-2. **Dry-run preview differed from actual installation.** It reported no changes even though the actual install deployed three local agent primitives.
-3. The missing `lfarci/.github-private` policy warning did not block this run. The actual install said no organization policy was found.
-4. **Basic content portability confirmed:** all three generated definitions preserved the reviewer identity, description, and instruction body. Advanced agent metadata and behavior remain untested.
-5. **No runtime conclusion yet:** the inspected Codex TOML preserves the simple agent content, but no harness has yet been shown to discover, invoke or obey the agent.
+After adding `- For each bug, include the expected return value or exception.` to the canonical `.apm/agents/reviewer.agent.md` and regenerating the agents, the user ran:
 
-## Next steps
+```bash
+grep -F "For each bug, include the expected return value or exception." \
+  .github/agents/reviewer.agent.md \
+  .codex/agents/reviewer.toml \
+  .opencode/agents/reviewer.md
+```
 
-1. Run `git diff -- src/ScoreCalculator.cs` to independently verify the Copilot run did not change the fixture.\n2. Invoke the generated reviewer in OpenCode and (if available) Codex against the same C# fixture.
-2. Optionally repeat OpenCode once to determine whether the one-character response-marker mismatch recurs.
-3. Test whether editing only the canonical agent propagates to all targets.
-4. Record harness versions, actual output, warnings and generated-file diffs in a follow-up PR.
+The phrase appeared once in each generated target file. In Codex, it was included in the escaped `developer_instructions` TOML value. This confirms **content propagation** in this run; it does not establish that runtime behavior will change accordingly.
 
-**Evidence:** user-provided console dry-run output and screenshot of a verbose successful APM 0.34.0 run. The generated files and lockfile remain local and are not included in this PR.
+## Findings and limitations
+
+1. **Basic portability demonstrated:** APM 0.34.0 integrated the local agent for three targets, preserved its content (Markdown for Copilot/OpenCode and TOML for Codex), and regenerated all three after a source edit.
+2. **Basic runtime behavior demonstrated:** all three harnesses produced reviewer responses finding the seeded boundary bug. Copilot and Codex emitted the exact marker; OpenCode emitted `APM-REVIEW-COMPLET` (missing the final `E`).
+3. **Source integrity confirmed:** no changes to `src/ScoreCalculator.cs` after each run.
+4. **CLI dry-run discrepancy:** dry run predicted no changes, but install deployed local agents.
+5. **Codex trace qualification:** a spawned `/root/custom_reviewer` was observed, although not every TOML property can be independently verified from that trace.
+6. **Out of scope:** advanced tool permissions, delegation equivalence, model choice, and cross-harness behavioral guarantees.
+
+## Optional follow-up work
+
+- Repeat OpenCode to investigate whether the completion-marker mismatch is reproducible.
+- Collect full version details for Copilot and OpenCode and commit redacted generated outputs/lockfile if useful for reproducibility.
+- Extend the lab to test permissions, model mapping, and other agent metadata separately.
+
+**Evidence:** user-provided CLI output and screenshots of APM, Copilot, OpenCode, Codex and propagation checks. The generated files and lockfile remain local and are not included in this PR.

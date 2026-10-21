@@ -1,6 +1,6 @@
 # Experiment 01 results
 
-**Status:** Partially completed — deployment and generated agent content verified for three targets; Copilot runtime passed; OpenCode runtime review passed with a marker mismatch; Codex runtime test pending.
+**Status:** Partially completed — deployment and generated agent content verified for three targets; Copilot runtime passed; OpenCode runtime review passed with a marker mismatch; Codex subagent trace and correct review observed; independent fixture diff pending.
 
 ## Environment
 
@@ -126,6 +126,18 @@ opencode run --agent reviewer "Review src/ScoreCalculator.cs for correctness bug
 
 This result is a **functional runtime pass with an exact-marker failure**, not a fully clean test. The agent did more work than Copilot and used scratch-file writes; only the project-file no-modification requirement is confirmed, not a general permission boundary. No timing or cost figure was supplied for the OpenCode run.
 
+## Codex runtime — subagent spawned and reviewer response returned
+
+**Version:** OpenAI Codex CLI `0.163.0`, as displayed in the user-provided screenshot.
+
+The user launched interactive Codex in the repository and requested delegation to the `reviewer` subagent defined by `.codex/agents/reviewer.toml`, to review `src/ScoreCalculator.cs` without modifying files.
+
+**Observed trace:** Codex said it would read the custom reviewer configuration, then showed `Read reviewer.toml, ScoreCalculator.cs`, `Started `/root/custom_reviewer``, and `Completed `/root/custom_reviewer``. The trace also displayed `Waiting for agents` and later `Finished waiting / No agents completed yet`, an apparent status inconsistency. The trace demonstrates a subagent execution, but the displayed name `custom_reviewer` does not independently establish that every setting in the generated `reviewer.toml` was applied.
+
+**Review outcome:** identified `src/ScoreCalculator.cs:10` as an off-by-one boundary bug, gave `ScoreAt(new[] { 7 }, 1)` as a failing input, recommended `index >= scores.Length`, proposed a unit test and ended with the exact marker `APM-REVIEW-COMPLETE`. Elapsed time reported: **24 seconds**.
+
+**Pending:** run `git diff -- src/ScoreCalculator.cs` after Codex and report the result. No Codex cost or credit data was supplied. This is a successful reviewer-style delegated response with the above trace caveat.
+
 ## Per-harness findings
 
 | Check | Copilot | Codex | OpenCode |
@@ -133,11 +145,11 @@ This result is a **functional runtime pass with an exact-marker failure**, not a
 | APM reported agent deployment to target directory | Pass | Pass | Pass |
 | Target directory appeared in Git status | Pass | Pass | Pass |
 | Expected file present and content verified | Pass | Pass | Pass |
-| Agent discovered by harness | Pass (selected with `--agent=reviewer`) | Not tested | Pass (`opencode run --agent reviewer`) |
-| Explicitly invoked | Pass | Not tested | Pass (CLI output identified `reviewer`) |
-| Off-by-one bug identified | Pass | Not tested | Pass (reproduced using xUnit in scratch directory) |
-| Marker present in response | Pass | Not tested | Fail (output ends `APM-REVIEW-COMPLET`, missing final `E`) |
-| Fixture unchanged after agent execution | Pass (`git diff -- src/ScoreCalculator.cs` empty) | Not tested | Pass (agent checked original file and Git diff; scratch files changed only) |
+| Agent discovered by harness | Pass (selected with `--agent=reviewer`) | Partially verified (read TOML, spawned `/root/custom_reviewer`) | Pass (`opencode run --agent reviewer`) |
+| Explicitly invoked | Pass | Pass (subagent spawned/completed in trace) | Pass (CLI output identified `reviewer`) |
+| Off-by-one bug identified | Pass | Pass | Pass (reproduced using xUnit in scratch directory) |
+| Marker present in response | Pass | Pass | Fail (output ends `APM-REVIEW-COMPLET`, missing final `E`) |
+| Fixture unchanged after agent execution | Pass (`git diff -- src/ScoreCalculator.cs` empty) | Not independently checked (prompt said no edits) | Pass (agent checked original file and Git diff; scratch files changed only) |
 | Propagation works after source edit | Not tested | Not tested | Not tested |
 
 ## Findings so far

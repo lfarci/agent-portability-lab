@@ -177,7 +177,7 @@ The phrase appeared once in each generated target file. In Codex, it was include
 ## Optional follow-up work
 
 - Repeat OpenCode to investigate whether the completion-marker mismatch is reproducible.
-- Collect full version details for Copilot and OpenCode and commit redacted generated outputs/lockfile if useful for reproducibility.
-- Extend the lab to test permissions, model mapping, and other agent metadata separately.
+- Collect the missing original Copilot and OpenCode version details if they can be recovered; generated agent definitions and the lockfile were subsequently committed in [PR #4](https://github.com/lfarci/agent-portability-lab/pull/4).
+- See [Experiment 02](02-tool-restrictions.md) for later **static** permission-configuration portability findings; runtime permission enforcement and model mappings remain untested.
 
-**Evidence:** user-provided CLI output and screenshots of APM, Copilot, OpenCode, Codex and propagation checks. The generated files and lockfile remain local and are not included in this PR.
+**Evidence:** user-provided CLI output and screenshots of APM, Copilot, OpenCode, Codex and propagation checks. Generated definitions and `apm.lock.yaml` were **untracked locally during the original run**, but were subsequently committed in [PR #4](https://github.com/lfarci/agent-portability-lab/pull/4), so the current [`main` branch](https://github.com/lfarci/agent-portability-lab) contains them. The original runtime observations above remain based on the captured local session.

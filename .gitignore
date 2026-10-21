@@ -6,3 +6,6 @@ apm_modules/
 **/obj/
 
 # Keep generated harness agent files visible in Git for experiment review.
+
+# Local Python virtual environment
+.venv/
